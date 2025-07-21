@@ -14,15 +14,13 @@ export default function CalendarPage() {
   const dispatch = useDispatch();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState();
-  const [formMode, setFormMode] = useState(null); // 'add' or 'edit'
+  const [formMode, setFormMode] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [conflictWarning, setConflictWarning] = useState(null);
   const [filter, setFilter] = useState("");
 
-  // Ensure events is always an array
   const safeEvents = events || [];
 
-  // Filtering for search
   const shownEvents = filter
     ? safeEvents.filter(e =>
         e.title.toLowerCase().includes(filter.toLowerCase()) ||

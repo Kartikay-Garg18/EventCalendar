@@ -1,15 +1,19 @@
 import { getMonthGrid } from "../utils/dateUtils";
-import { isSameDay, format } from "date-fns";
+import { isSameDay, format, setHours, setMinutes } from "date-fns";
 import EventItem from "./EventItem";
 import { expandRecurring } from "../features/events/recurrence";
+import { useDrop } from "react-dnd";
+import { useDispatch, useSelector } from "react-redux";
+import { updateEvent } from "../features/events/eventsSlice";
 import { useState } from "react";
 
 export default function CalendarGrid({ currentMonth, events = [], onDayClick, onEventClick }) {
   const days = getMonthGrid(currentMonth);
   const today = new Date();
   const [showAllEvents, setShowAllEvents] = useState({});
+  const dispatch = useDispatch();
+  const { list: allEventsList } = useSelector(s => s.events);
 
-  // Expand recurring events for this grid month - fix the duplication issue
   const allEvents = events.flatMap(ev => expandRecurring(ev, days[0], days[days.length-1]));
 
   function eventsOn(day) {
@@ -25,7 +29,6 @@ export default function CalendarGrid({ currentMonth, events = [], onDayClick, on
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-      {/* Header with day names */}
       <div className="grid grid-cols-7 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
         {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d, index)=>(
           <div key={d} className={`text-sm font-semibold text-center py-4 text-gray-700 ${
@@ -36,7 +39,6 @@ export default function CalendarGrid({ currentMonth, events = [], onDayClick, on
         ))}
       </div>
       
-      {/* Calendar days grid */}
       <div className="grid grid-cols-7">
         {days.map((day, index) => {
           const dayEvents = eventsOn(day);
@@ -46,16 +48,32 @@ export default function CalendarGrid({ currentMonth, events = [], onDayClick, on
           const visibleEvents = showAll ? dayEvents : dayEvents.slice(0, maxVisible);
           const hasMore = dayEvents.length > maxVisible;
 
+          const [{ isOver }, drop] = useDrop({
+            accept: "EVENT",
+            drop: (item, monitor) => {
+              const eventToMove = allEventsList.find(e => e.id === item.id);
+              if (!eventToMove) return;
+              const oldDate = new Date(eventToMove.start);
+              const newDate = setHours(setMinutes(new Date(day), oldDate.getMinutes()), oldDate.getHours());
+              if (eventToMove.start === newDate.toISOString()) return;
+              dispatch(updateEvent({ ...eventToMove, start: newDate.toISOString() }));
+            },
+            collect: monitor => ({
+              isOver: monitor.isOver()
+            })
+          });
+
           return (
             <div
               key={day}
+              ref={drop}
               className={`min-h-[120px] border-r border-b border-gray-100 p-3 cursor-pointer flex flex-col transition-all duration-200 hover:bg-blue-50 hover:shadow-inner ${
                 isSameDay(today, day) 
                   ? "bg-gradient-to-br from-blue-100 to-indigo-100 border-blue-300" 
                   : "bg-white hover:bg-gray-50"
-              } ${index % 7 === 6 ? 'border-r-0' : ''}`}
+              } ${index % 7 === 6 ? 'border-r-0' : ''}
+              ${isOver ? "ring-2 ring-blue-400 ring-inset bg-blue-50" : ""}`}
               onClick={e => { 
-                // Only prevent if clicking on an event item or +more button
                 if (e.target.closest('.event-item') || e.target.closest('.more-events-btn')) return;
                 onDayClick(day); 
               }}

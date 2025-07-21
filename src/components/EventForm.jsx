@@ -37,7 +37,6 @@ export default function EventForm({ mode, event, day, onSave, onDelete, onCancel
   }
   return (
     <div className="bg-white w-96 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-      {/* Header */}
       <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
         <h2 className="text-xl font-bold text-white flex items-center">
           <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +46,6 @@ export default function EventForm({ mode, event, day, onSave, onDelete, onCancel
         </h2>
       </div>
 
-      {/* Form Content */}
       <div className="p-6 space-y-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Event Title</label>
@@ -133,7 +131,6 @@ export default function EventForm({ mode, event, day, onSave, onDelete, onCancel
           </div>
         )}
 
-        {/* Action Buttons */}
         <div className="flex gap-3 pt-4 border-t border-gray-200">
           <button 
             className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5" 

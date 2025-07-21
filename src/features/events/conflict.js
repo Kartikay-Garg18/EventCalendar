@@ -8,7 +8,6 @@ export function hasConflict(newEvent, events) {
 }
 
 function isTimeOverlap(ev1, ev2) {
-  // Compare time: event is date+startTime; Here only conflicts if same start time
   const t1 = parseISO(ev1.start).toTimeString().slice(0,5);
   const t2 = parseISO(ev2.start).toTimeString().slice(0,5);
   return t1 === t2;

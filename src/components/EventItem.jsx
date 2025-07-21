@@ -1,3 +1,5 @@
+import { useDrag } from "react-dnd";
+
 export default function EventItem({ event, onClick }) {
   const colorClasses = {
     blue: "bg-blue-500 hover:bg-blue-600 border-blue-600",
@@ -7,11 +9,20 @@ export default function EventItem({ event, onClick }) {
     orange: "bg-orange-500 hover:bg-orange-600 border-orange-600"
   };
 
+  const [{ isDragging }, drag] = useDrag({
+    type: "EVENT",
+    item: { id: event.id },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
   return (
     <div
+      ref={drag}
       className={`event-item rounded-lg px-3 py-2 text-xs cursor-pointer text-white font-medium shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5 border-l-4 ${
         colorClasses[event.color] || colorClasses.blue
-      }`}
+      } ${isDragging ? 'opacity-50' : ''}`}
       title={event.description}
       onClick={onClick}
     >

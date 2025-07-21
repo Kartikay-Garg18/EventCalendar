@@ -1,12 +1,10 @@
 import { addDays, addWeeks, addMonths, isSameDay, isBefore } from 'date-fns';
 
-// Returns array of event occurrences for a recurring event in current month view.
 export function expandRecurring(event, monthStart, monthEnd) {
   if (!event.recurrence || event.recurrence.type === 'NONE') return [event];
   let occurrences = [];
   let current = new Date(event.start);
   let n = 0;
-  // Expand until monthEnd
   while (isBefore(current, monthEnd) || isSameDay(current, monthEnd)) {
     if ((isBefore(monthStart, current) || isSameDay(monthStart, current)) && (isBefore(current, monthEnd) || isSameDay(current, monthEnd))) {
       occurrences.push({ ...event, start: current.toISOString(), instance: n });
